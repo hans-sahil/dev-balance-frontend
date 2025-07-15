@@ -1,15 +1,17 @@
 import { List, LayoutDashboard, type LucideIcon } from 'lucide-react';
 import { Separator } from './ui/separator';
+import { NavLink } from 'react-router';
 
 interface menuItem {
   id: string;
   label: string;
   icon: LucideIcon;
   // reference : https://github.com/lucide-icons/lucide/discussions/1869
+  path: string;
 }
 const menuItems: menuItem[] = [
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'todos', label: 'Todos', icon: List },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '' },
+  { id: 'todos', label: 'Todos', icon: List, path: 'todo' },
 ];
 
 const Sidebar = () => {
@@ -28,17 +30,21 @@ const Sidebar = () => {
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
-              <button
+              <NavLink
                 key={item.id}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 mb-2 ${
-                  'abc' === item.id
-                    ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
-                }`}
+                to={`/${item.path}`}
+                end
+                className={({ isActive }) =>
+                  `w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 mb-2 ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                  }`
+                }
               >
                 <Icon size={20} />
                 <span className="font-medium">{item.label}</span>
-              </button>
+              </NavLink>
             );
           })}
         </nav>
