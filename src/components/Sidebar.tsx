@@ -16,7 +16,7 @@ const menuItems: menuItem[] = [
 
 const Sidebar = () => {
   return (
-    <div className="h-screen flex flex-col overflow-auto w-[400px] bg-white py-6">
+    <div className="h-screen flex flex-col overflow-auto w-[350px] bg-white shadow-md py-6">
       <div className="px-6">
         <div className="text-2xl font-semibold">
           <span>dev</span>
@@ -24,7 +24,7 @@ const Sidebar = () => {
         </div>
         <p className="text-sm text-gray-500 mt-1 mb-3.5">Productivity made simple</p>
       </div>
-      <Separator className="h-[0.4px]" />
+      <Separator />
       <div className="flex-1">
         <nav className="mt-6 px-4">
           {menuItems.map((item) => {
