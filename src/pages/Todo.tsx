@@ -1,59 +1,87 @@
 import CommonPage from '@/components/layouts/CommonPage';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { TrendingUp, Circle, CheckCircle2, Star, Timer, AlertTriangle, Clock } from 'lucide-react';
+import {
+  TrendingUp,
+  Circle,
+  CheckCircle2,
+  Star,
+  Timer,
+  AlertTriangle,
+  Clock,
+  Plus,
+} from 'lucide-react';
 
 const TaskManager = () => {
   return (
     <CommonPage>
       <div className="p-5 flex flex-col gap-6">
         {/* Hero Section */}
-        <div className="bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 rounded-lg p-8">
-          <div className="flex justify-baseline">
+
+        <div className="bg-white shadow-md rounded-lg p-8">
+          <div className="flex justify-baseline gap-6 items-start">
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-white">Task Manager</h1>
-              <p className="text-lg text-blue-100">Professional productivity workspace</p>
+              <h1 className="text-3xl font-bold e">Task Manager</h1>
+              <p className="text-lg text-secondary-foreground">
+                Professional productivity workspace
+              </p>
             </div>
-            <div className="text-right">
-              <div className="flex gap-2 items-center mb-2">
-                <TrendingUp className="text-green-300" />
-                <span className="text-lg text-blue-100">Completion Rate</span>
+
+            <div className="flex gap-2 items-center">
+              <div className="p-2 rounded-full bg-green-100">
+                <TrendingUp className="text-green-300 w-[1.125rem] h-[1.125rem]" />
               </div>
-              <div className="text-2xl font-bold text-white">55%</div>
+              <span className="text-md ">Completion Rate</span>
+              <span className="text-lg font-bold ">55%</span>
             </div>
+
+            {/* Create Task Button */}
+            <Button className="w-fit flex items-center gap-1.5 mx-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white/90 cursor-pointer">
+              <Plus /> Create New Task
+            </Button>
           </div>
 
           {/* count of active, completed, starred tasks and the remaining time for active tasks */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+            <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
-                <Circle className="h-5 w-5 text-cyan-300" />
-                <span className="font-medium text-blue-100">Active Tasks</span>
+                <div className="p-2 bg-cyan-100 rounded-full">
+                  <Circle className="h-5 w-5 text-cyan-300" />
+                </div>
+                <span className="font-medium ">Active Tasks</span>
               </div>
-              <div className="text-2xl font-bold text-white pl-1">2</div>
+              <div className="text-2xl font-bold pl-3">2</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+            <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-300" />
-                <span className="font-medium text-blue-100">Completed</span>
+                <div className="p-2 bg-emerald-100 rounded-full">
+                  <CheckCircle2 className="h-5 w-5 text-emerald-300" />
+                </div>
+                <span className="font-medium">Completed</span>
               </div>
-              <div className="text-2xl font-bold text-white pl-1">4</div>
+              <div className="text-2xl font-bold pl-3">4</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+            <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
-                <Star className="h-5 w-5 text-yellow-300" />
-                <span className="font-medium text-blue-100">Starred</span>
+                <div className="p-2 bg-yellow-100 rounded-full">
+                  <Star className="h-5 w-5 text-yellow-400" />
+                </div>
+                <span className="font-medium">Starred</span>
               </div>
-              <div className="text-2xl font-bold text-white pl-1">1</div>
+              <div className="text-2xl font-bold pl-3">1</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-white/20">
+            <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
-                <Timer className="h-5 w-5 text-purple-300" />
-                <span className="font-medium text-blue-100">Time Remaining</span>
+                <div className="p-2 bg-purple-100 rounded-full">
+                  <Timer className="h-5 w-5 text-purple-400" />
+                </div>
+                <span className="font-medium">Time Remaining</span>
               </div>
-              <div className="text-2xl font-bold text-white pl-1">12 hrs 27 mins</div>
+              <div className="text-2xl font-bold pl-3">12 hrs 27 mins</div>
             </div>
           </div>
         </div>
+
         {/* Task Priority Priority Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="shadow-lg bg-rose-100/70">
