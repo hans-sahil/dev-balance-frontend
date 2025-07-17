@@ -3,7 +3,7 @@ import { SnackbarProvider } from 'notistack';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/';
-import TaskManager from './pages/Todo';
+import TaskManager from './pages/TaskManager';
 
 const router = createBrowserRouter([
   {

@@ -11,13 +11,63 @@ import {
   Clock,
   Plus,
 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import Todo from '@/components/TaskManager/Todo';
+
+type Priority = 'high' | 'medium' | 'low';
+const todos = [
+  {
+    title: 'Implement user authentication system',
+    description: `Build secure login/signup with JWT tokens and password hashing. This includes setting
+              up middleware, creating secure routes, implementing password validation, and ensuring
+              proper session management.`,
+    is_starred: true,
+    is_completed: false,
+    priority: 'high' as Priority,
+    subtasks: [
+      { id: 1, title: 'Setup JWT library', is_completed: true },
+      { id: 2, title: 'Create auth middleware', is_completed: true },
+      { id: 3, title: 'Build login component', is_completed: false },
+      { id: 4, title: 'Add password validation', is_completed: false },
+    ],
+    tags: ['backend', 'security', 'auth'],
+    estimatedTime: 480,
+    dueDate: new Date(Date.now() + 86400000),
+  },
+  {
+    title: 'Design system documentation',
+    description:
+      'Create comprehensive documentation for the design system components including color palettes, typography guidelines, spacing rules, and component usage examples. This will help maintain consistency across the entire application.',
+    is_starred: false,
+    is_completed: false,
+    priority: 'low' as Priority,
+    subtasks: [
+      { id: 1, title: 'Component guidelines', is_completed: true },
+      { id: 2, title: 'Color palette docs', is_completed: false },
+      { id: 3, title: 'Typography guide', is_completed: false },
+    ],
+    tags: ['backend', 'security', 'auth'],
+    estimatedTime: 480,
+    dueDate: new Date(Date.now() + 86400000),
+  },
+  {
+    title: 'Performance optimization',
+    description:
+      'optimize app performance and reduce bundle size through code splitting, lazy loading, and asset optimization.',
+    is_starred: false,
+    is_completed: true,
+    priority: 'medium' as Priority,
+    tags: ['backend', 'security', 'auth'],
+    estimatedTime: 480,
+    dueDate: new Date(Date.now() + 86400000),
+  },
+];
 
 const TaskManager = () => {
   return (
     <CommonPage>
       <div className="p-5 flex flex-col gap-6">
         {/* Hero Section */}
-
         <div className="bg-white shadow-md rounded-lg p-8">
           <div className="flex justify-baseline gap-6 items-start">
             <div className="flex-1">
@@ -129,6 +179,63 @@ const TaskManager = () => {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        <div>
+          <Tabs defaultValue="all" className="shadow-md bg-white rounded-md gap-6 pb-6">
+            <div className="p-6 bg-gray-50">
+              <TabsList className="h-auto grid grid-cols-4 w-full max-w-[600px] bg-white py-1.5">
+                <TabsTrigger
+                  value="all"
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                >
+                  All Tasks (7)
+                </TabsTrigger>
+                <TabsTrigger
+                  value="active"
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                >
+                  Active (2)
+                </TabsTrigger>
+                <TabsTrigger
+                  value="completed"
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                >
+                  Completed (4)
+                </TabsTrigger>
+                <TabsTrigger
+                  value="starred"
+                  className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
+                >
+                  Starred (1)
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="all" className="px-6">
+              <div className="grid grid-cols-1 gap-4">
+                {todos.map((todo, index) => (
+                  <Todo key={index} todo={todo} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="active" className="px-6">
+              <div className="grid grid-cols-1 gap-4">
+                {todos.slice(0, 1).map((todo, index) => (
+                  <Todo key={index} todo={todo} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="completed" className="px-6">
+              <div className="grid grid-cols-1 gap-4">
+                {todos.slice(0, 2).map((todo, index) => (
+                  <Todo key={index} todo={todo} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="starred" className="px-6">
+              starred tasks.
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </CommonPage>

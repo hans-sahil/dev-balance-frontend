@@ -7,9 +7,9 @@ interface propTypes {
 const CommonPage = ({ children }: propTypes) => {
   return (
     <FullScreenLayout>
-      <div className="flex w-full">
+      <div className="flex w-full h-full">
         <Sidebar />
-        <div className="flex-1 overflow-hidden">{children}</div>
+        <div className="flex-1 overflow-auto">{children}</div>
       </div>
     </FullScreenLayout>
   );

@@ -16,7 +16,7 @@ const menuItems: menuItem[] = [
 
 const Sidebar = () => {
   return (
-    <div className="h-screen flex flex-col overflow-auto w-[350px] bg-white shadow-md py-6">
+    <div className="h-screen flex flex-col overflow-auto w-[340px] bg-white shadow-md py-6">
       <div className="px-6">
         <div className="text-2xl font-semibold">
           <span>dev</span>
