@@ -37,7 +37,7 @@ const Todo = ({ todo }: TodoProps) => {
         </div>
         <div className="flex-1 space-y-4">
           <h3
-            className={`text-xl font-semibold leading-tight ${
+            className={`text-lg font-semibold leading-tight ${
               is_completed ? 'line-through text-gray-500' : 'text-gray-900'
             }`}
           >
@@ -47,7 +47,7 @@ const Todo = ({ todo }: TodoProps) => {
             className={` p-4 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border-l-4 border-indigo-200`}
           >
             <p
-              className={`text-lg leading-relaxed ${
+              className={`leading-relaxed ${
                 is_completed ? 'line-through text-gray-400' : 'text-gray-700'
               }`}
             >
@@ -71,11 +71,7 @@ const Todo = ({ todo }: TodoProps) => {
               <div className="space-y-2">
                 {todo.subtasks.map((subtask) => (
                   <div key={subtask.id} className="flex items-center space-x-2">
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        subtask.is_completed ? 'bg-green-500' : 'bg-gray-300'
-                      }`}
-                    ></div>
+                    <Checkbox checked={subtask.is_completed} className="h-4 w-4" />
                     <span
                       className={`text-sm ${
                         subtask.is_completed ? 'line-through text-gray-500' : 'text-gray-700'

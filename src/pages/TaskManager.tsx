@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Todo from '@/components/TaskManager/Todo';
+import AddTaskDialog from '@/components/TaskManager/AddTaskDialog';
+import { useState } from 'react';
 
 type Priority = 'high' | 'medium' | 'low';
 const todos = [
@@ -64,6 +66,7 @@ const todos = [
 ];
 
 const TaskManager = () => {
+  const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
   return (
     <CommonPage>
       <div className="p-5 flex flex-col gap-6">
@@ -72,9 +75,7 @@ const TaskManager = () => {
           <div className="flex justify-baseline gap-6 items-start">
             <div className="flex-1">
               <h1 className="text-3xl font-bold e">Task Manager</h1>
-              <p className="text-lg text-secondary-foreground">
-                Professional productivity workspace
-              </p>
+              <p className="text-secondary-foreground">Professional productivity workspace</p>
             </div>
 
             <div className="flex gap-2 items-center">
@@ -86,7 +87,10 @@ const TaskManager = () => {
             </div>
 
             {/* Create Task Button */}
-            <Button className="w-fit flex items-center gap-1.5 mx-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white/90 cursor-pointer">
+            <Button
+              className="w-fit flex items-center gap-1.5 mx-auto bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white/90 cursor-pointer"
+              onClick={() => setIsAddingTask(true)}
+            >
               <Plus /> Create New Task
             </Button>
           </div>
@@ -238,6 +242,8 @@ const TaskManager = () => {
           </Tabs>
         </div>
       </div>
+
+      <AddTaskDialog onChange={setIsAddingTask} open={isAddingTask} />
     </CommonPage>
   );
 };
