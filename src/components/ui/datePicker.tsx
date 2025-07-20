@@ -4,7 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
-export function DatePicker({ date, onChange }: { date: Date; onChange: (val: Date) => void }) {
+export function DatePicker({
+  date,
+  onChange,
+}: {
+  date: Date | undefined;
+  onChange: (val: Date) => void;
+}) {
   return (
     <Popover>
       <PopoverTrigger asChild>

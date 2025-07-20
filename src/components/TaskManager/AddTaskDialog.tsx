@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Textarea } from '@/components/ui/textarea';
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 interface AddTaskProps {
   open: boolean;
@@ -23,6 +24,7 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
     if (subtaskText.trim()) {
       setSubtasks((prev) => [...prev, subtaskText]);
       setSubtaskText('');
+      setShowSubtaskInput(false);
     }
   };
 
@@ -39,18 +41,35 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
               title: '',
               description: '',
               priority: '',
-              dueDate: '',
+              dueDate: undefined,
               estimatedTime: '',
               tags: '',
               subtasks: [] as string[],
             }}
+            validationSchema={Yup.object({
+              title: Yup.string().required('Title is required'),
+              priority: Yup.string()
+                .oneOf(['high', 'medium', 'low'], 'Select a priority')
+                .required('Priority is required'),
+            })}
             onSubmit={(values) => {
               values.subtasks = subtasks;
-              console.log('Submitted Task:', values);
+              const existingTasks = localStorage.getItem('tasks');
+              const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+              localStorage.setItem('tasks', JSON.stringify([...parsedExistingTasks, values]));
+              setSubtasks([]);
               onChange(false);
             }}
           >
-            {({ values, handleChange, handleBlur, handleSubmit, setFieldValue }) => (
+            {({
+              values,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              setFieldValue,
+              errors,
+              touched,
+            }) => (
               <form className="flex flex-col gap-5" onSubmit={handleSubmit}>
                 <div className="space-y-2">
                   <Label htmlFor="title">
@@ -63,8 +82,10 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
                     value={values.title}
                     onChange={handleChange}
                     onBlur={handleBlur}
-                    required
                   />
+                  {errors.title && touched.title && (
+                    <p className="text-xs text-red-500">{errors.title}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -104,12 +125,15 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
                         </SelectItem>
                       </SelectContent>
                     </Select>
+                    {errors.priority && touched.priority && (
+                      <p className="text-xs text-red-500">{errors.priority}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
                     <Label>Due Date</Label>
                     <DatePicker
-                      date={values.dueDate as Date}
+                      date={values.dueDate}
                       onChange={(val: Date) => {
                         setFieldValue('dueDate', val);
                       }}
