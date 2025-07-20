@@ -14,59 +14,29 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Todo from '@/components/TaskManager/Todo';
 import AddTaskDialog from '@/components/TaskManager/AddTaskDialog';
-import { useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 
-type Priority = 'high' | 'medium' | 'low';
-const todos = [
-  {
-    title: 'Implement user authentication system',
-    description: `Build secure login/signup with JWT tokens and password hashing. This includes setting
-              up middleware, creating secure routes, implementing password validation, and ensuring
-              proper session management.`,
-    is_starred: true,
-    is_completed: false,
-    priority: 'high' as Priority,
-    subtasks: [
-      { id: 1, title: 'Setup JWT library', is_completed: true },
-      { id: 2, title: 'Create auth middleware', is_completed: true },
-      { id: 3, title: 'Build login component', is_completed: false },
-      { id: 4, title: 'Add password validation', is_completed: false },
-    ],
-    tags: ['backend', 'security', 'auth'],
-    estimatedTime: 480,
-    dueDate: new Date(Date.now() + 86400000),
-  },
-  {
-    title: 'Design system documentation',
-    description:
-      'Create comprehensive documentation for the design system components including color palettes, typography guidelines, spacing rules, and component usage examples. This will help maintain consistency across the entire application.',
-    is_starred: false,
-    is_completed: false,
-    priority: 'low' as Priority,
-    subtasks: [
-      { id: 1, title: 'Component guidelines', is_completed: true },
-      { id: 2, title: 'Color palette docs', is_completed: false },
-      { id: 3, title: 'Typography guide', is_completed: false },
-    ],
-    tags: ['backend', 'security', 'auth'],
-    estimatedTime: 480,
-    dueDate: new Date(Date.now() + 86400000),
-  },
-  {
-    title: 'Performance optimization',
-    description:
-      'optimize app performance and reduce bundle size through code splitting, lazy loading, and asset optimization.',
-    is_starred: false,
-    is_completed: true,
-    priority: 'medium' as Priority,
-    tags: ['backend', 'security', 'auth'],
-    estimatedTime: 480,
-    dueDate: new Date(Date.now() + 86400000),
-  },
-];
+interface TodoType {
+  title: string;
+  description?: string;
+  is_starred?: boolean;
+  is_completed?: boolean;
+  priority: 'high' | 'medium' | 'low';
+  subtasks?: { id: number; title: string; is_completed: boolean }[];
+  dueDate?: Date;
+  tags?: string[];
+  estimatedTime?: number;
+}
 
 const TaskManager = () => {
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
+  const [tasks, setTasks] = useState([]);
+
+  useLayoutEffect(() => {
+    const existingTasks = localStorage.getItem('tasks');
+    const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+    setTasks(parsedExistingTasks);
+  }, []);
   return (
     <CommonPage>
       <div className="p-5 flex flex-col gap-6">
@@ -193,51 +163,59 @@ const TaskManager = () => {
                   value="all"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  All Tasks (7)
+                  All Tasks ({tasks.length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="active"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  Active (2)
+                  Active ({tasks.filter((todo: TodoType) => !todo.is_completed).length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="completed"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  Completed (4)
+                  Completed ({tasks.filter((todo: TodoType) => todo.is_completed).length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="starred"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  Starred (1)
+                  Starred ({tasks.filter((todo: TodoType) => todo.is_starred).length})
                 </TabsTrigger>
               </TabsList>
             </div>
             <TabsContent value="all" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {todos.map((todo, index) => (
+                {tasks.map((todo, index) => (
                   <Todo key={index} todo={todo} />
                 ))}
               </div>
             </TabsContent>
             <TabsContent value="active" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {todos.slice(0, 1).map((todo, index) => (
-                  <Todo key={index} todo={todo} />
-                ))}
+                {tasks
+                  .filter((todo: TodoType) => !todo.is_completed)
+                  .map((todo, index) => (
+                    <Todo key={index} todo={todo} />
+                  ))}
               </div>
             </TabsContent>
             <TabsContent value="completed" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {todos.slice(0, 2).map((todo, index) => (
-                  <Todo key={index} todo={todo} />
-                ))}
+                {tasks
+                  .filter((todo: TodoType) => todo.is_completed)
+                  .map((todo, index) => (
+                    <Todo key={index} todo={todo} />
+                  ))}
               </div>
             </TabsContent>
             <TabsContent value="starred" className="px-6">
-              starred tasks.
+              {tasks
+                .filter((todo: TodoType) => todo.is_starred)
+                .map((todo, index) => (
+                  <Todo key={index} todo={todo} />
+                ))}
             </TabsContent>
           </Tabs>
         </div>

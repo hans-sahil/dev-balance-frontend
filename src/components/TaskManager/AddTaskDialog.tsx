@@ -44,7 +44,7 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
               dueDate: undefined,
               estimatedTime: '',
               tags: '',
-              subtasks: [] as string[],
+              subtasks: [] as Array<{ id: number; title: string }>, // for now using this because storing the tasks in localStorage. will remove this when use db
             }}
             validationSchema={Yup.object({
               title: Yup.string().required('Title is required'),
@@ -53,10 +53,19 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
                 .required('Priority is required'),
             })}
             onSubmit={(values) => {
-              values.subtasks = subtasks;
+              values.subtasks = subtasks.map((subtask, index) => ({ id: index, title: subtask }));
+              const tagsArray = values.tags
+                .split(',')
+                .map((tag) => tag.trim())
+                .filter((tag) => tag);
+
+              const taskToStore = {
+                ...values,
+                tags: tagsArray,
+              };
               const existingTasks = localStorage.getItem('tasks');
               const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
-              localStorage.setItem('tasks', JSON.stringify([...parsedExistingTasks, values]));
+              localStorage.setItem('tasks', JSON.stringify([...parsedExistingTasks, taskToStore]));
               setSubtasks([]);
               onChange(false);
             }}

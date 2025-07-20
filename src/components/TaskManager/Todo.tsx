@@ -7,8 +7,8 @@ import PriorityTag from './PriorityTag';
 interface Todo {
   title: string;
   description: string;
-  is_starred: boolean;
-  is_completed: boolean;
+  is_starred?: boolean;
+  is_completed?: boolean;
   priority: 'high' | 'medium' | 'low';
   subtasks?: { id: number; title: string; is_completed: boolean }[];
   dueDate?: Date;
@@ -96,7 +96,7 @@ const Todo = ({ todo }: TodoProps) => {
             {todo.dueDate && (
               <Badge className="bg-blue-50 text-blue-700 border-blue-200">
                 <Calendar className="h-3 w-3 mr-1" />
-                {todo.dueDate.toLocaleDateString()}
+                {/* {todo.dueDate.toLocaleDateString()} */}
               </Badge>
             )}
             {todo.estimatedTime && (
