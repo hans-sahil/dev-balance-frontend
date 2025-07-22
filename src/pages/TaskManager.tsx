@@ -16,13 +16,13 @@ import Todo from '@/components/TaskManager/Todo';
 import AddTaskDialog from '@/components/TaskManager/AddTaskDialog';
 import { useLayoutEffect, useState } from 'react';
 
-interface TodoType {
+export interface TodoType {
   title: string;
   description?: string;
   is_starred?: boolean;
   is_completed?: boolean;
   priority: 'high' | 'medium' | 'low';
-  subtasks?: { id: number; title: string; is_completed: boolean }[];
+  subtasks?: { id: number; title: string; is_completed?: boolean }[];
   dueDate?: Date;
   tags?: string[];
   estimatedTime?: number;
@@ -30,7 +30,7 @@ interface TodoType {
 
 const TaskManager = () => {
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Array<TodoType>>([]);
 
   useLayoutEffect(() => {
     const existingTasks = localStorage.getItem('tasks');
@@ -221,7 +221,16 @@ const TaskManager = () => {
         </div>
       </div>
 
-      <AddTaskDialog onChange={setIsAddingTask} open={isAddingTask} />
+      <AddTaskDialog
+        onChange={setIsAddingTask}
+        open={isAddingTask}
+        onAddTask={(task: TodoType) => {
+          const existingTasks = localStorage.getItem('tasks');
+          const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+          localStorage.setItem('tasks', JSON.stringify([...parsedExistingTasks, task]));
+          setTasks((prev: Array<TodoType>) => [...prev, task]);
+        }}
+      />
     </CommonPage>
   );
 };

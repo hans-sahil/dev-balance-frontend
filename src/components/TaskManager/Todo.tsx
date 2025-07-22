@@ -3,21 +3,10 @@ import { Checkbox } from '../ui/checkbox';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
 import PriorityTag from './PriorityTag';
-
-interface Todo {
-  title: string;
-  description: string;
-  is_starred?: boolean;
-  is_completed?: boolean;
-  priority: 'high' | 'medium' | 'low';
-  subtasks?: { id: number; title: string; is_completed: boolean }[];
-  dueDate?: Date;
-  tags: string[];
-  estimatedTime?: number;
-}
+import type { TodoType } from '@/pages/TaskManager';
 
 interface TodoProps {
-  todo: Todo;
+  todo: TodoType;
 }
 
 const Todo = ({ todo }: TodoProps) => {
@@ -88,7 +77,7 @@ const Todo = ({ todo }: TodoProps) => {
           {/* Tags and Meta */}
           <div className="flex flex-wrap items-center gap-3 mb-3">
             <PriorityTag priority={priority} />
-            {todo.tags.map((tag, index) => (
+            {todo.tags?.map((tag, index) => (
               <Badge key={index} variant={'outline'} className="text-xs border-gray-300">
                 #{tag}
               </Badge>

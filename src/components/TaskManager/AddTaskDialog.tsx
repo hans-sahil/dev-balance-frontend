@@ -9,13 +9,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import type { TodoType } from '@/pages/TaskManager';
 
 interface AddTaskProps {
   open: boolean;
   onChange: Dispatch<SetStateAction<boolean>>;
+  onAddTask: (task: TodoType) => void;
 }
 
-const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
+const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange, onAddTask }) => {
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
   const [subtasks, setSubtasks] = useState<string[]>([]);
   const [subtaskText, setSubtaskText] = useState('');
@@ -40,9 +42,9 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
             initialValues={{
               title: '',
               description: '',
-              priority: '',
+              priority: '' as 'high' | 'low' | 'medium',
               dueDate: undefined,
-              estimatedTime: '',
+              estimatedTime: 0,
               tags: '',
               subtasks: [] as Array<{ id: number; title: string }>, // for now using this because storing the tasks in localStorage. will remove this when use db
             }}
@@ -63,9 +65,7 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange }) => {
                 ...values,
                 tags: tagsArray,
               };
-              const existingTasks = localStorage.getItem('tasks');
-              const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
-              localStorage.setItem('tasks', JSON.stringify([...parsedExistingTasks, taskToStore]));
+              onAddTask(taskToStore);
               setSubtasks([]);
               onChange(false);
             }}
