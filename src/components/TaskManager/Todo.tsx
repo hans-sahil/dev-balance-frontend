@@ -60,7 +60,7 @@ const Todo = ({ todo }: TodoProps) => {
               <div className="space-y-2">
                 {todo.subtasks.map((subtask) => (
                   <div key={subtask.id} className="flex items-center space-x-2">
-                    <Checkbox checked={subtask.is_completed} className="h-4 w-4" />
+                    <Checkbox checked={subtask.is_completed} className="h-4 w-4 border-gray-400" />
                     <span
                       className={`text-sm ${
                         subtask.is_completed ? 'line-through text-gray-500' : 'text-gray-700'
