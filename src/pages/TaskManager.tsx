@@ -16,15 +16,20 @@ import Todo from '@/components/TaskManager/Todo';
 import AddTaskDialog from '@/components/TaskManager/AddTaskDialog';
 import { useLayoutEffect, useState } from 'react';
 
+export interface Subtask {
+  id: number;
+  title: string;
+  is_completed?: boolean;
+}
 export interface TodoType {
   title: string;
   description?: string;
   is_starred?: boolean;
   is_completed?: boolean;
   priority: 'high' | 'medium' | 'low';
-  subtasks?: { id: number; title: string; is_completed?: boolean }[];
+  subtasks?: Array<Subtask>;
   dueDate?: Date;
-  tags?: string[];
+  tags?: Array<string>;
   estimatedTime?: number;
 }
 

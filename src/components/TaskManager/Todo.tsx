@@ -3,11 +3,15 @@ import { Checkbox } from '../ui/checkbox';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
 import PriorityTag from './PriorityTag';
-import type { TodoType } from '@/pages/TaskManager';
+import type { Subtask, TodoType } from '@/pages/TaskManager';
 
 interface TodoProps {
   todo: TodoType;
 }
+
+const getProgress = (subtasks: Subtask[]): number => {
+  return subtasks.filter((subtask) => subtask.is_completed).length;
+};
 
 const Todo = ({ todo }: TodoProps) => {
   const { title, description, is_completed, is_starred, subtasks, priority } = todo;
@@ -48,9 +52,9 @@ const Todo = ({ todo }: TodoProps) => {
             <div>
               <div className="flex justify-between mb-1.5 text-sm">
                 <span>Progess</span>
-                <span>50%</span>
+                <span>{getProgress(todo.subtasks || [])}%</span>
               </div>
-              <Progress indicatorColor="bg-blue-500" value={50} />
+              <Progress indicatorColor="bg-blue-500" value={getProgress(todo.subtasks || [])} />
             </div>
           )}
 
