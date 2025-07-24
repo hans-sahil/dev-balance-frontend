@@ -38,6 +38,26 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
     enqueueSnackbar('Task removed successfully.', { variant: 'success' });
   };
 
+  const updateSubtaskStatus = (subTaskId: number) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id === todo.id) {
+          const subtasks = todo.subtasks;
+          return {
+            ...todo,
+            subtasks: subtasks?.map((subtask) => {
+              if (subtask.id === subTaskId) {
+                return { ...subtask, is_completed: !subtask.is_completed };
+              }
+              return subtask;
+            }),
+          };
+        }
+        return task;
+      })
+    );
+  };
+
   return (
     <div className="border border-gray-200 p-4 rounded-md">
       <div className="flex items-baseline gap-3">
@@ -87,7 +107,11 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
               <div className="space-y-2">
                 {todo.subtasks.map((subtask) => (
                   <div key={subtask.id} className="flex items-center space-x-2">
-                    <Checkbox checked={subtask.is_completed} className="h-4 w-4 border-gray-400" />
+                    <Checkbox
+                      checked={subtask.is_completed}
+                      onChange={() => updateSubtaskStatus(subtask.id)}
+                      className="h-4 w-4 border-gray-400"
+                    />
                     <span
                       className={`text-sm ${
                         subtask.is_completed ? 'line-through text-gray-500' : 'text-gray-700'
