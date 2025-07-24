@@ -21,7 +21,10 @@ interface TodoProps {
 }
 
 const getProgress = (subtasks: Subtask[]): number => {
-  return subtasks.filter((subtask) => subtask.is_completed).length;
+  const progress =
+    (subtasks.filter((subtask) => subtask.is_completed).length / subtasks.length) * 100;
+  if (Number.isInteger(progress)) return progress;
+  return parseFloat(progress.toFixed(2));
 };
 
 const Todo = ({ todo, setTasks }: TodoProps) => {
@@ -38,20 +41,34 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
     enqueueSnackbar('Task removed successfully.', { variant: 'success' });
   };
 
-  const updateSubtaskStatus = (subTaskId: number) => {
+  const updateSubtaskStatus = (subTaskId: number, value: boolean) => {
     setTasks((prev) =>
       prev.map((task) => {
         if (task.id === todo.id) {
           const subtasks = todo.subtasks;
-          return {
+          const newTask = {
             ...todo,
             subtasks: subtasks?.map((subtask) => {
               if (subtask.id === subTaskId) {
-                return { ...subtask, is_completed: !subtask.is_completed };
+                return { ...subtask, is_completed: value };
               }
               return subtask;
             }),
           };
+          const existingTasks = localStorage.getItem('tasks');
+          const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+          localStorage.setItem(
+            'tasks',
+            JSON.stringify(
+              parsedExistingTasks.map((task: TodoType) => {
+                if (task.id === todo.id) {
+                  return newTask;
+                }
+                return task;
+              })
+            )
+          );
+          return newTask;
         }
         return task;
       })
@@ -109,7 +126,9 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
                   <div key={subtask.id} className="flex items-center space-x-2">
                     <Checkbox
                       checked={subtask.is_completed}
-                      onChange={() => updateSubtaskStatus(subtask.id)}
+                      onCheckedChange={(value) => {
+                        updateSubtaskStatus(subtask.id, value);
+                      }}
                       className="h-4 w-4 border-gray-400"
                     />
                     <span
