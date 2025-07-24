@@ -1,20 +1,43 @@
-import { Calendar, Star, Timer } from 'lucide-react';
+import { Calendar, Star, Timer, EllipsisVertical, PencilIcon, Trash2 } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
 import PriorityTag from './PriorityTag';
 import type { Subtask, TodoType } from '@/pages/TaskManager';
+import IconButton from '../common/IconButton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import type { Dispatch, SetStateAction } from 'react';
+import { enqueueSnackbar } from 'notistack';
 
 interface TodoProps {
   todo: TodoType;
+  setTasks: Dispatch<SetStateAction<Array<TodoType>>>;
 }
 
 const getProgress = (subtasks: Subtask[]): number => {
   return subtasks.filter((subtask) => subtask.is_completed).length;
 };
 
-const Todo = ({ todo }: TodoProps) => {
+const Todo = ({ todo, setTasks }: TodoProps) => {
   const { title, description, is_completed, is_starred, subtasks, priority } = todo;
+
+  const onRemoveTodo = () => {
+    setTasks((prev) => prev.filter((task) => task.id !== todo.id));
+    const existingTasks = localStorage.getItem('tasks');
+    const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+    localStorage.setItem(
+      'tasks',
+      JSON.stringify(parsedExistingTasks.filter((task: TodoType) => task.id !== todo.id))
+    );
+    enqueueSnackbar('Task removed successfully.', { variant: 'success' });
+  };
+
   return (
     <div className="border border-gray-200 p-4 rounded-md">
       <div className="flex items-baseline gap-3">
@@ -100,6 +123,26 @@ const Todo = ({ todo }: TodoProps) => {
             )}
           </div>
         </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div>
+              <IconButton>
+                <EllipsisVertical className="w-5 h-5" />
+              </IconButton>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuGroup>
+              <DropdownMenuItem className="flex gap-1.5 items-center">
+                <PencilIcon /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex gap-1.5 items-center" onClick={onRemoveTodo}>
+                <Trash2 /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

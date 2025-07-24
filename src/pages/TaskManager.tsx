@@ -21,7 +21,7 @@ export interface Subtask {
   title: string;
   is_completed?: boolean;
 }
-export interface TodoType {
+export interface NewTodoType {
   title: string;
   description?: string;
   is_starred?: boolean;
@@ -31,6 +31,9 @@ export interface TodoType {
   dueDate?: Date;
   tags?: Array<string>;
   estimatedTime?: number;
+}
+export interface TodoType extends NewTodoType {
+  id: string;
 }
 
 const TaskManager = () => {
@@ -193,7 +196,7 @@ const TaskManager = () => {
             <TabsContent value="all" className="px-6">
               <div className="grid grid-cols-1 gap-4">
                 {tasks.map((todo, index) => (
-                  <Todo key={index} todo={todo} />
+                  <Todo key={index} todo={todo} setTasks={setTasks} />
                 ))}
               </div>
             </TabsContent>
@@ -202,7 +205,7 @@ const TaskManager = () => {
                 {tasks
                   .filter((todo: TodoType) => !todo.is_completed)
                   .map((todo, index) => (
-                    <Todo key={index} todo={todo} />
+                    <Todo key={index} todo={todo} setTasks={setTasks} />
                   ))}
               </div>
             </TabsContent>
@@ -211,7 +214,7 @@ const TaskManager = () => {
                 {tasks
                   .filter((todo: TodoType) => todo.is_completed)
                   .map((todo, index) => (
-                    <Todo key={index} todo={todo} />
+                    <Todo key={index} todo={todo} setTasks={setTasks} />
                   ))}
               </div>
             </TabsContent>
@@ -219,7 +222,7 @@ const TaskManager = () => {
               {tasks
                 .filter((todo: TodoType) => todo.is_starred)
                 .map((todo, index) => (
-                  <Todo key={index} todo={todo} />
+                  <Todo key={index} todo={todo} setTasks={setTasks} />
                 ))}
             </TabsContent>
           </Tabs>
@@ -229,11 +232,20 @@ const TaskManager = () => {
       <AddTaskDialog
         onChange={setIsAddingTask}
         open={isAddingTask}
-        onAddTask={(task: TodoType) => {
+        onAddTask={(task: NewTodoType) => {
           const existingTasks = localStorage.getItem('tasks');
           const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
-          localStorage.setItem('tasks', JSON.stringify([...parsedExistingTasks, task]));
-          setTasks((prev: Array<TodoType>) => [...prev, task]);
+          localStorage.setItem(
+            'tasks',
+            JSON.stringify([
+              ...parsedExistingTasks,
+              { id: parsedExistingTasks.length + 1, ...task },
+            ])
+          );
+          setTasks((prev: Array<TodoType>) => [
+            ...prev,
+            { ...task, id: parsedExistingTasks.length + 1 },
+          ]);
         }}
       />
     </CommonPage>

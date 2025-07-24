@@ -9,12 +9,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import type { TodoType } from '@/pages/TaskManager';
+import type { NewTodoType } from '@/pages/TaskManager';
 
 interface AddTaskProps {
   open: boolean;
   onChange: Dispatch<SetStateAction<boolean>>;
-  onAddTask: (task: TodoType) => void;
+  onAddTask: (task: NewTodoType) => void;
 }
 
 const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange, onAddTask }) => {
