@@ -21,12 +21,14 @@ export interface Subtask {
   title: string;
   is_completed?: boolean;
 }
+
+export type PriorityType = 'high' | 'medium' | 'low';
 export interface NewTodoType {
   title: string;
   description?: string;
   is_starred?: boolean;
   is_completed?: boolean;
-  priority: 'high' | 'medium' | 'low';
+  priority: PriorityType;
   subtasks?: Array<Subtask>;
   dueDate?: Date;
   tags?: Array<string>;
@@ -36,9 +38,24 @@ export interface TodoType extends NewTodoType {
   id: string;
 }
 
+type TaskTypes = 'starred' | 'active' | 'completed';
+
 const TaskManager = () => {
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
   const [tasks, setTasks] = useState<Array<TodoType>>([]);
+
+  const getFilteredTasks = (type: TaskTypes, priority?: PriorityType): Array<TodoType> => {
+    return tasks.filter((task) => {
+      const matchesType =
+        (type === 'active' && !task.is_completed) ||
+        (type === 'completed' && task.is_completed) ||
+        (type === 'starred' && task.is_starred);
+
+      const matchesPriority = priority ? task.priority === priority : true;
+
+      return matchesType && matchesPriority;
+    });
+  };
 
   useLayoutEffect(() => {
     const existingTasks = localStorage.getItem('tasks');
@@ -82,7 +99,7 @@ const TaskManager = () => {
                 </div>
                 <span className="font-medium ">Active Tasks</span>
               </div>
-              <div className="text-2xl font-bold pl-3">2</div>
+              <div className="text-2xl font-bold pl-3">{getFilteredTasks('active').length}</div>
             </div>
             <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
@@ -91,7 +108,7 @@ const TaskManager = () => {
                 </div>
                 <span className="font-medium">Completed</span>
               </div>
-              <div className="text-2xl font-bold pl-3">4</div>
+              <div className="text-2xl font-bold pl-3">{getFilteredTasks('completed').length}</div>
             </div>
             <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
@@ -100,7 +117,7 @@ const TaskManager = () => {
                 </div>
                 <span className="font-medium">Starred</span>
               </div>
-              <div className="text-2xl font-bold pl-3">1</div>
+              <div className="text-2xl font-bold pl-3">{getFilteredTasks('starred').length}</div>
             </div>
             <div className="bg-gray-50 rounded-xl p-4 backdrop-blur-sm border border-white/20">
               <div className="flex items-center gap-2 mb-2">
@@ -125,7 +142,9 @@ const TaskManager = () => {
                   </div>
                   <div>
                     <p className="font-bold text-red-800 text-lg">High Priority</p>
-                    <p className="text-2xl font-bold text-red-900 mt-1">1</p>
+                    <p className="text-2xl font-bold text-red-900 mt-1">
+                      {getFilteredTasks('active', 'high').length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -140,7 +159,9 @@ const TaskManager = () => {
                   </div>
                   <div>
                     <p className="font-bold text-yellow-800 text-lg">Medium Priority</p>
-                    <p className="text-2xl font-bold text-yellow-900 mt-1">1</p>
+                    <p className="text-2xl font-bold text-yellow-900 mt-1">
+                      {getFilteredTasks('active', 'medium').length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -155,7 +176,9 @@ const TaskManager = () => {
                   </div>
                   <div>
                     <p className="font-bold text-green-800 text-lg">Low Priority</p>
-                    <p className="text-2xl font-bold text-green-900 mt-1">0</p>
+                    <p className="text-2xl font-bold text-green-900 mt-1">
+                      {getFilteredTasks('active', 'low').length}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -177,19 +200,19 @@ const TaskManager = () => {
                   value="active"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  Active ({tasks.filter((todo: TodoType) => !todo.is_completed).length})
+                  Active ({getFilteredTasks('active').length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="completed"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  Completed ({tasks.filter((todo: TodoType) => todo.is_completed).length})
+                  Completed ({getFilteredTasks('completed').length})
                 </TabsTrigger>
                 <TabsTrigger
                   value="starred"
                   className="data-[state=active]:bg-blue-600 data-[state=active]:text-white"
                 >
-                  Starred ({tasks.filter((todo: TodoType) => todo.is_starred).length})
+                  Starred ({getFilteredTasks('starred').length})
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -202,28 +225,22 @@ const TaskManager = () => {
             </TabsContent>
             <TabsContent value="active" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {tasks
-                  .filter((todo: TodoType) => !todo.is_completed)
-                  .map((todo, index) => (
-                    <Todo key={index} todo={todo} setTasks={setTasks} />
-                  ))}
+                {getFilteredTasks('active').map((todo, index) => (
+                  <Todo key={index} todo={todo} setTasks={setTasks} />
+                ))}
               </div>
             </TabsContent>
             <TabsContent value="completed" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {tasks
-                  .filter((todo: TodoType) => todo.is_completed)
-                  .map((todo, index) => (
-                    <Todo key={index} todo={todo} setTasks={setTasks} />
-                  ))}
+                {getFilteredTasks('completed').map((todo, index) => (
+                  <Todo key={index} todo={todo} setTasks={setTasks} />
+                ))}
               </div>
             </TabsContent>
             <TabsContent value="starred" className="px-6">
-              {tasks
-                .filter((todo: TodoType) => todo.is_starred)
-                .map((todo, index) => (
-                  <Todo key={index} todo={todo} setTasks={setTasks} />
-                ))}
+              {getFilteredTasks('starred').map((todo, index) => (
+                <Todo key={index} todo={todo} setTasks={setTasks} />
+              ))}
             </TabsContent>
           </Tabs>
         </div>

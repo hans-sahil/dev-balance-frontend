@@ -126,7 +126,7 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
                   <div key={subtask.id} className="flex items-center space-x-2">
                     <Checkbox
                       checked={subtask.is_completed}
-                      onCheckedChange={(value) => {
+                      onCheckedChange={(value: boolean) => {
                         updateSubtaskStatus(subtask.id, value);
                       }}
                       className="h-4 w-4 border-gray-400"
