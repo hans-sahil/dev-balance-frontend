@@ -12,7 +12,7 @@ import {
   Plus,
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import Todo from '@/components/TaskManager/Todo';
+import TaskRenderer from '@/components/TaskManager/TaskRenderer';
 import AddTaskDialog from '@/components/TaskManager/AddTaskDialog';
 import { useLayoutEffect, useState } from 'react';
 
@@ -23,7 +23,7 @@ export interface Subtask {
 }
 
 export type PriorityType = 'high' | 'medium' | 'low';
-export interface NewTodoType {
+export interface NewTask {
   title: string;
   description?: string;
   is_starred?: boolean;
@@ -34,7 +34,7 @@ export interface NewTodoType {
   tags?: Array<string>;
   estimatedTime?: number;
 }
-export interface TodoType extends NewTodoType {
+export interface Task extends NewTask {
   id: string;
 }
 
@@ -42,9 +42,9 @@ type TaskTypes = 'starred' | 'active' | 'completed';
 
 const TaskManager = () => {
   const [isAddingTask, setIsAddingTask] = useState<boolean>(false);
-  const [tasks, setTasks] = useState<Array<TodoType>>([]);
+  const [tasks, setTasks] = useState<Array<Task>>([]);
 
-  const getFilteredTasks = (type: TaskTypes, priority?: PriorityType): Array<TodoType> => {
+  const getFilteredTasks = (type: TaskTypes, priority?: PriorityType): Array<Task> => {
     return tasks.filter((task) => {
       const matchesType =
         (type === 'active' && !task.is_completed) ||
@@ -218,28 +218,28 @@ const TaskManager = () => {
             </div>
             <TabsContent value="all" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {tasks.map((todo, index) => (
-                  <Todo key={index} todo={todo} setTasks={setTasks} />
+                {tasks.map((task, index) => (
+                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
                 ))}
               </div>
             </TabsContent>
             <TabsContent value="active" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {getFilteredTasks('active').map((todo, index) => (
-                  <Todo key={index} todo={todo} setTasks={setTasks} />
+                {getFilteredTasks('active').map((task, index) => (
+                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
                 ))}
               </div>
             </TabsContent>
             <TabsContent value="completed" className="px-6">
               <div className="grid grid-cols-1 gap-4">
-                {getFilteredTasks('completed').map((todo, index) => (
-                  <Todo key={index} todo={todo} setTasks={setTasks} />
+                {getFilteredTasks('completed').map((task, index) => (
+                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
                 ))}
               </div>
             </TabsContent>
             <TabsContent value="starred" className="px-6">
-              {getFilteredTasks('starred').map((todo, index) => (
-                <Todo key={index} todo={todo} setTasks={setTasks} />
+              {getFilteredTasks('starred').map((task, index) => (
+                <TaskRenderer key={index} task={task} setTasks={setTasks} />
               ))}
             </TabsContent>
           </Tabs>
@@ -249,7 +249,7 @@ const TaskManager = () => {
       <AddTaskDialog
         onChange={setIsAddingTask}
         open={isAddingTask}
-        onAddTask={(task: NewTodoType) => {
+        onAddTask={(task: NewTask) => {
           const existingTasks = localStorage.getItem('tasks');
           const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
           localStorage.setItem(
@@ -259,7 +259,7 @@ const TaskManager = () => {
               { id: parsedExistingTasks.length + 1, ...task },
             ])
           );
-          setTasks((prev: Array<TodoType>) => [
+          setTasks((prev: Array<Task>) => [
             ...prev,
             { ...task, id: parsedExistingTasks.length + 1 },
           ]);

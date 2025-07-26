@@ -3,7 +3,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
 import PriorityTag from './PriorityTag';
-import type { Subtask, TodoType } from '@/pages/TaskManager';
+import type { Subtask, Task } from '@/pages/TaskManager';
 import IconButton from '../common/IconButton';
 import {
   DropdownMenu,
@@ -15,9 +15,9 @@ import {
 import type { Dispatch, SetStateAction } from 'react';
 import { enqueueSnackbar } from 'notistack';
 
-interface TodoProps {
-  todo: TodoType;
-  setTasks: Dispatch<SetStateAction<Array<TodoType>>>;
+interface TaskRendererProps {
+  task: Task;
+  setTasks: Dispatch<SetStateAction<Array<Task>>>;
 }
 
 const getProgress = (subtasks: Subtask[]): number => {
@@ -27,27 +27,27 @@ const getProgress = (subtasks: Subtask[]): number => {
   return parseFloat(progress.toFixed(2));
 };
 
-const Todo = ({ todo, setTasks }: TodoProps) => {
-  const { title, description, is_completed, is_starred, subtasks, priority } = todo;
+const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
+  const { title, description, is_completed, is_starred, subtasks, priority } = task;
 
-  const onRemoveTodo = () => {
-    setTasks((prev) => prev.filter((task) => task.id !== todo.id));
+  const onRemoveTask = () => {
+    setTasks((prev) => prev.filter((t) => t.id !== task.id));
     const existingTasks = localStorage.getItem('tasks');
     const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
     localStorage.setItem(
       'tasks',
-      JSON.stringify(parsedExistingTasks.filter((task: TodoType) => task.id !== todo.id))
+      JSON.stringify(parsedExistingTasks.filter((t: Task) => t.id !== task.id))
     );
     enqueueSnackbar('Task removed successfully.', { variant: 'success' });
   };
 
   const updateSubtaskStatus = (subTaskId: number, value: boolean) => {
     setTasks((prev) =>
-      prev.map((task) => {
-        if (task.id === todo.id) {
-          const subtasks = todo.subtasks;
+      prev.map((t) => {
+        if (t.id === task.id) {
+          const subtasks = task.subtasks;
           const newTask = {
-            ...todo,
+            ...task,
             subtasks: subtasks?.map((subtask) => {
               if (subtask.id === subTaskId) {
                 return { ...subtask, is_completed: value };
@@ -60,17 +60,17 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
           localStorage.setItem(
             'tasks',
             JSON.stringify(
-              parsedExistingTasks.map((task: TodoType) => {
-                if (task.id === todo.id) {
+              parsedExistingTasks.map((t: Task) => {
+                if (t.id === task.id) {
                   return newTask;
                 }
-                return task;
+                return t;
               })
             )
           );
           return newTask;
         }
-        return task;
+        return t;
       })
     );
   };
@@ -96,33 +96,35 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
           >
             {title}
           </h3>
-          <div
-            className={` p-4 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border-l-4 border-indigo-200`}
-          >
-            <p
-              className={`leading-relaxed ${
-                is_completed ? 'line-through text-gray-400' : 'text-gray-700'
-              }`}
+          {task.description && (
+            <div
+              className={` p-4 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl border-l-4 border-indigo-200`}
             >
-              {description}
-            </p>
-          </div>
+              <p
+                className={`leading-relaxed ${
+                  is_completed ? 'line-through text-gray-400' : 'text-gray-700'
+                }`}
+              >
+                {description}
+              </p>
+            </div>
+          )}
 
           {subtasks && subtasks.length > 0 && (
             <div>
               <div className="flex justify-between mb-1.5 text-sm">
                 <span>Progess</span>
-                <span>{getProgress(todo.subtasks || [])}%</span>
+                <span>{getProgress(task.subtasks || [])}%</span>
               </div>
-              <Progress indicatorColor="bg-blue-500" value={getProgress(todo.subtasks || [])} />
+              <Progress indicatorColor="bg-blue-500" value={getProgress(task.subtasks || [])} />
             </div>
           )}
 
           {/* Subtasks */}
-          {todo.subtasks && todo.subtasks.length > 0 && (
+          {task.subtasks && task.subtasks.length > 0 && (
             <div className="mb-4 p-3 bg-indigo-50 rounded-xl">
               <div className="space-y-2">
-                {todo.subtasks.map((subtask) => (
+                {task.subtasks.map((subtask) => (
                   <div key={subtask.id} className="flex items-center space-x-2">
                     <Checkbox
                       checked={subtask.is_completed}
@@ -147,21 +149,21 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
           {/* Tags and Meta */}
           <div className="flex flex-wrap items-center gap-3 mb-3">
             <PriorityTag priority={priority} />
-            {todo.tags?.map((tag, index) => (
+            {task.tags?.map((tag, index) => (
               <Badge key={index} variant={'outline'} className="text-xs border-gray-300">
                 #{tag}
               </Badge>
             ))}
-            {todo.dueDate && (
+            {task.dueDate && (
               <Badge className="bg-blue-50 text-blue-700 border-blue-200">
                 <Calendar className="h-3 w-3 mr-1" />
-                {/* {todo.dueDate.toLocaleDateString()} */}
+                {/* {task.dueDate.toLocaleDateString()} */}
               </Badge>
             )}
-            {todo.estimatedTime && (
+            {task.estimatedTime && (
               <Badge className="bg-purple-50 text-purple-700 border-purple-200">
                 <Timer className="h-3 w-3 mr-1" />
-                {todo.estimatedTime}
+                {task.estimatedTime}
               </Badge>
             )}
           </div>
@@ -180,7 +182,7 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
               <DropdownMenuItem className="flex gap-1.5 items-center">
                 <PencilIcon /> Edit
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex gap-1.5 items-center" onClick={onRemoveTodo}>
+              <DropdownMenuItem className="flex gap-1.5 items-center" onClick={onRemoveTask}>
                 <Trash2 /> Delete
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -191,4 +193,4 @@ const Todo = ({ todo, setTasks }: TodoProps) => {
   );
 };
 
-export default Todo;
+export default TaskRenderer;
