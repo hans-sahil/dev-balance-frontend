@@ -14,6 +14,7 @@ import {
 } from '../ui/dropdown-menu';
 import type { Dispatch, SetStateAction } from 'react';
 import { enqueueSnackbar } from 'notistack';
+import convertMinutesToHoursAndMinutes from '@/utils/convertMinToHoursAndMin';
 
 interface TaskRendererProps {
   task: Task;
@@ -185,10 +186,10 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
                 {/* {task.dueDate.toLocaleDateString()} */}
               </Badge>
             )}
-            {task.estimatedTime && (
+            {!!task.estimatedTime && task.estimatedTime > 0 && (
               <Badge className="bg-purple-50 text-purple-700 border-purple-200">
                 <Timer className="h-3 w-3 mr-1" />
-                {task.estimatedTime}
+                {convertMinutesToHoursAndMinutes(task.estimatedTime)}
               </Badge>
             )}
           </div>
