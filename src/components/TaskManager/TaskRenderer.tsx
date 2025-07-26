@@ -75,12 +75,37 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
     );
   };
 
+  const starredOrUnStarredTask = () => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === task.id) {
+          return { ...t, is_starred: !t.is_starred };
+        }
+        return t;
+      })
+    );
+    const existingTasks = localStorage.getItem('tasks');
+    const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+    localStorage.setItem(
+      'tasks',
+      JSON.stringify(
+        parsedExistingTasks.map((t: Task) => {
+          if (t.id === task.id) {
+            return { ...t, is_starred: !t.is_starred };
+          }
+          return t;
+        })
+      )
+    );
+  };
+
   return (
     <div className="border border-gray-200 p-4 rounded-md">
       <div className="flex items-baseline gap-3">
         <div className="flex items-center gap-3 relative top-1">
           <Checkbox checked={is_completed} className="w-5 h-5" />
           <Star
+            onClick={starredOrUnStarredTask}
             className={`h-5 w-5 ${
               is_starred
                 ? 'text-yellow-500 hover:text-yellow-600 fill-current'
