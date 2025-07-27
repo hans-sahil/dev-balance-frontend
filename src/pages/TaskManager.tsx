@@ -15,8 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskRenderer from '@/components/TaskManager/TaskRenderer';
 import { useLayoutEffect, useState } from 'react';
 import AddOrEditTaskDialog from '@/components/TaskManager/AddOrEditTaskDialog';
-import { Player } from '@lottiefiles/react-lottie-player';
-import EmptyState from '@/assets/animations/empty_state.json';
+import EmptyState from '@/components/animations/EmptyState';
 
 export interface Subtask {
   id: number;
@@ -37,7 +36,7 @@ export interface NewTask {
   estimatedTime?: number;
 }
 export interface Task extends NewTask {
-  id: string;
+  id?: string;
 }
 
 type TaskTypes = 'starred' | 'active' | 'completed';
@@ -227,12 +226,7 @@ const TaskManager = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <Player
-                    autoplay
-                    loop
-                    src={EmptyState}
-                    style={{ height: '250px', width: '250px' }}
-                  />
+                  <EmptyState />
                   <p className="text-sm text-secondary-foreground">
                     You haven't created any tasks yet!
                   </p>
@@ -248,12 +242,7 @@ const TaskManager = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <Player
-                    autoplay
-                    loop
-                    src={EmptyState}
-                    style={{ height: '250px', width: '250px' }}
-                  />
+                  <EmptyState />
                   <p className="text-sm text-secondary-foreground">No active tasks for now!</p>
                 </div>
               )}
@@ -267,12 +256,7 @@ const TaskManager = () => {
                 </div>
               ) : (
                 <div className="flex flex-col items-center">
-                  <Player
-                    autoplay
-                    loop
-                    src={EmptyState}
-                    style={{ height: '250px', width: '250px' }}
-                  />
+                  <EmptyState />
                   <p className="text-sm text-secondary-foreground">
                     No tasks completed yet. Keep going!
                   </p>
@@ -286,12 +270,7 @@ const TaskManager = () => {
                 ))
               ) : (
                 <div className="flex flex-col items-center">
-                  <Player
-                    autoplay
-                    loop
-                    src={EmptyState}
-                    style={{ height: '250px', width: '250px' }}
-                  />
+                  <EmptyState />
                   <p className="text-sm text-secondary-foreground">
                     You haven't starred any tasks yet.
                   </p>
@@ -305,14 +284,14 @@ const TaskManager = () => {
       <AddOrEditTaskDialog
         onChange={setIsAddingTask}
         open={isAddingTask}
-        onAddTask={(task: NewTask) => {
+        onSubmit={(task: Task) => {
           const existingTasks = localStorage.getItem('tasks');
           const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
           localStorage.setItem(
             'tasks',
             JSON.stringify([
               ...parsedExistingTasks,
-              { id: parsedExistingTasks.length + 1, ...task },
+              { ...task, id: parsedExistingTasks.length + 1 },
             ])
           );
           setTasks((prev: Array<Task>) => [

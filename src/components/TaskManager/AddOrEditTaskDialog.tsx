@@ -9,17 +9,37 @@ import { Textarea } from '@/components/ui/textarea';
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import type { NewTask } from '@/pages/TaskManager';
+import type { Task } from '@/pages/TaskManager';
+
+const initialDefaultValues = {
+  title: '',
+  description: '',
+  priority: '' as 'high' | 'low' | 'medium',
+  dueDate: undefined,
+  estimatedTime: 0,
+  tags: '',
+  subtasks: [] as Array<{ id: number; title: string }>, // for now using this because storing the tasks in localStorage. will remove this when use db
+};
 
 interface AddOrEditTaskProps {
   open: boolean;
   onChange: Dispatch<SetStateAction<boolean>>;
-  onAddTask: (task: NewTask) => void;
+  onSubmit: (task: Task) => void;
+  mode?: string;
+  task?: Task;
 }
 
-const AddOrEditTaskDialog: React.FC<AddOrEditTaskProps> = ({ open, onChange, onAddTask }) => {
+const AddOrEditTaskDialog: React.FC<AddOrEditTaskProps> = ({
+  open,
+  onChange,
+  onSubmit,
+  mode,
+  task,
+}) => {
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
-  const [subtasks, setSubtasks] = useState<string[]>([]);
+  const [subtasks, setSubtasks] = useState<string[]>(
+    task?.subtasks?.map((subtask) => subtask.title) || []
+  );
   const [subtaskText, setSubtaskText] = useState('');
 
   const handleAddSubtask = () => {
@@ -34,20 +54,25 @@ const AddOrEditTaskDialog: React.FC<AddOrEditTaskProps> = ({ open, onChange, onA
     <Dialog open={open} onOpenChange={onChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
+          <DialogTitle>{mode !== 'edit' ? 'Create New Task' : 'Edit Task'} </DialogTitle>
         </DialogHeader>
 
         <div className="mt-2">
           <Formik
-            initialValues={{
-              title: '',
-              description: '',
-              priority: '' as 'high' | 'low' | 'medium',
-              dueDate: undefined,
-              estimatedTime: 0,
-              tags: '',
-              subtasks: [] as Array<{ id: number; title: string }>, // for now using this because storing the tasks in localStorage. will remove this when use db
-            }}
+            initialValues={
+              mode === 'edit' && typeof task === 'object'
+                ? {
+                    id: task.id,
+                    title: task.title,
+                    subtasks: task.subtasks,
+                    description: task.description,
+                    priority: task.priority,
+                    dueDate: task.dueDate,
+                    estimatedTime: task.estimatedTime,
+                    tags: task.tags?.join(',') || '',
+                  }
+                : initialDefaultValues
+            }
             validationSchema={Yup.object({
               title: Yup.string().required('Title is required'),
               priority: Yup.string()
@@ -65,7 +90,7 @@ const AddOrEditTaskDialog: React.FC<AddOrEditTaskProps> = ({ open, onChange, onA
                 ...values,
                 tags: tagsArray,
               };
-              onAddTask(taskToStore);
+              onSubmit(taskToStore);
               setSubtasks([]);
               onChange(false);
             }}
@@ -238,7 +263,7 @@ const AddOrEditTaskDialog: React.FC<AddOrEditTaskProps> = ({ open, onChange, onA
                     type="submit"
                     className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
                   >
-                    Create Task
+                    {mode !== 'edit' ? 'Create Task' : 'Save'}
                   </Button>
                 </DialogFooter>
               </form>

@@ -12,9 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
-import type { Dispatch, SetStateAction } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import convertMinutesToHoursAndMinutes from '@/utils/convertMinToHoursAndMin';
+import AddOrEditTaskDialog from './AddOrEditTaskDialog';
 
 interface TaskRendererProps {
   task: Task;
@@ -30,6 +31,7 @@ const getProgress = (subtasks: Subtask[]): number => {
 
 const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
   const { title, description, is_completed, is_starred, subtasks, priority } = task;
+  const [isEditingTask, setIsEditingTask] = useState(false);
 
   const onRemoveTask = () => {
     setTasks((prev) => prev.filter((t) => t.id !== task.id));
@@ -246,7 +248,10 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end">
             <DropdownMenuGroup>
-              <DropdownMenuItem className="flex gap-1.5 items-center">
+              <DropdownMenuItem
+                className="flex gap-1.5 items-center"
+                onClick={() => setIsEditingTask(true)}
+              >
                 <PencilIcon /> Edit
               </DropdownMenuItem>
               <DropdownMenuItem className="flex gap-1.5 items-center" onClick={onRemoveTask}>
@@ -255,6 +260,38 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
             </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {isEditingTask && (
+          <AddOrEditTaskDialog
+            open={true}
+            onChange={setIsEditingTask}
+            onSubmit={(task: Task) => {
+              const existingTasks = localStorage.getItem('tasks');
+              const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+              localStorage.setItem(
+                'tasks',
+                JSON.stringify(
+                  parsedExistingTasks.map((t: Task) => {
+                    if (t.id === task.id) {
+                      return task;
+                    }
+                    return t;
+                  })
+                )
+              );
+              setTasks((prev: Array<Task>) =>
+                prev.map((t: Task) => {
+                  if (t.id === task.id) {
+                    return task;
+                  }
+                  return t;
+                })
+              );
+            }}
+            mode="edit"
+            task={task}
+          />
+        )}
       </div>
     </div>
   );
