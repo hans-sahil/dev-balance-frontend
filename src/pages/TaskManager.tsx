@@ -13,8 +13,10 @@ import {
 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import TaskRenderer from '@/components/TaskManager/TaskRenderer';
-import AddTaskDialog from '@/components/TaskManager/AddTaskDialog';
 import { useLayoutEffect, useState } from 'react';
+import AddOrEditTaskDialog from '@/components/TaskManager/AddOrEditTaskDialog';
+import { Player } from '@lottiefiles/react-lottie-player';
+import EmptyState from '@/assets/animations/empty_state.json';
 
 export interface Subtask {
   id: number;
@@ -217,36 +219,90 @@ const TaskManager = () => {
               </TabsList>
             </div>
             <TabsContent value="all" className="px-6">
-              <div className="grid grid-cols-1 gap-4">
-                {tasks.map((task, index) => (
-                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
-                ))}
-              </div>
+              {tasks.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {tasks.map((task, index) => (
+                    <TaskRenderer key={index} task={task} setTasks={setTasks} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <Player
+                    autoplay
+                    loop
+                    src={EmptyState}
+                    style={{ height: '250px', width: '250px' }}
+                  />
+                  <p className="text-sm text-secondary-foreground">
+                    You haven't created any tasks yet!
+                  </p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="active" className="px-6">
-              <div className="grid grid-cols-1 gap-4">
-                {getFilteredTasks('active').map((task, index) => (
-                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
-                ))}
-              </div>
+              {getFilteredTasks('active').length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {getFilteredTasks('active').map((task, index) => (
+                    <TaskRenderer key={index} task={task} setTasks={setTasks} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <Player
+                    autoplay
+                    loop
+                    src={EmptyState}
+                    style={{ height: '250px', width: '250px' }}
+                  />
+                  <p className="text-sm text-secondary-foreground">No active tasks for now!</p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="completed" className="px-6">
-              <div className="grid grid-cols-1 gap-4">
-                {getFilteredTasks('completed').map((task, index) => (
-                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
-                ))}
-              </div>
+              {getFilteredTasks('completed').length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                  {getFilteredTasks('completed').map((task, index) => (
+                    <TaskRenderer key={index} task={task} setTasks={setTasks} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <Player
+                    autoplay
+                    loop
+                    src={EmptyState}
+                    style={{ height: '250px', width: '250px' }}
+                  />
+                  <p className="text-sm text-secondary-foreground">
+                    No tasks completed yet. Keep going!
+                  </p>
+                </div>
+              )}
             </TabsContent>
             <TabsContent value="starred" className="px-6">
-              {getFilteredTasks('starred').map((task, index) => (
-                <TaskRenderer key={index} task={task} setTasks={setTasks} />
-              ))}
+              {getFilteredTasks('starred').length > 0 ? (
+                getFilteredTasks('starred').map((task, index) => (
+                  <TaskRenderer key={index} task={task} setTasks={setTasks} />
+                ))
+              ) : (
+                <div className="flex flex-col items-center">
+                  <Player
+                    autoplay
+                    loop
+                    src={EmptyState}
+                    style={{ height: '250px', width: '250px' }}
+                  />
+                  <p className="text-sm text-secondary-foreground">
+                    You haven't starred any tasks yet.
+                  </p>
+                </div>
+              )}
             </TabsContent>
           </Tabs>
         </div>
       </div>
 
-      <AddTaskDialog
+      <AddOrEditTaskDialog
         onChange={setIsAddingTask}
         open={isAddingTask}
         onAddTask={(task: NewTask) => {

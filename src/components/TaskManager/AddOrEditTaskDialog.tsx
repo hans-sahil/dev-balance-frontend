@@ -11,13 +11,13 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import type { NewTask } from '@/pages/TaskManager';
 
-interface AddTaskProps {
+interface AddOrEditTaskProps {
   open: boolean;
   onChange: Dispatch<SetStateAction<boolean>>;
   onAddTask: (task: NewTask) => void;
 }
 
-const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange, onAddTask }) => {
+const AddOrEditTaskDialog: React.FC<AddOrEditTaskProps> = ({ open, onChange, onAddTask }) => {
   const [showSubtaskInput, setShowSubtaskInput] = useState(false);
   const [subtasks, setSubtasks] = useState<string[]>([]);
   const [subtaskText, setSubtaskText] = useState('');
@@ -250,4 +250,4 @@ const AddTaskDialog: React.FC<AddTaskProps> = ({ open, onChange, onAddTask }) =>
   );
 };
 
-export default AddTaskDialog;
+export default AddOrEditTaskDialog;
