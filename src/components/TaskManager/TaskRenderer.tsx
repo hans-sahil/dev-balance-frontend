@@ -56,6 +56,16 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
               return subtask;
             }),
           };
+
+          if (
+            newTask.subtasks?.filter((subtask) => subtask.is_completed).length ===
+            newTask.subtasks?.length
+          ) {
+            newTask.is_completed = true;
+          } else if (newTask.is_completed) {
+            newTask.is_completed = false;
+          }
+
           const existingTasks = localStorage.getItem('tasks');
           const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
           localStorage.setItem(
@@ -100,11 +110,42 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
     );
   };
 
+  const updateTaskStatus = (value: boolean) => {
+    const updatedTask = { ...task, is_completed: value };
+    if ('subtasks' in updatedTask) {
+      updatedTask.subtasks = updatedTask.subtasks?.map((subtask) => {
+        return { ...subtask, is_completed: value };
+      });
+    }
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === task.id) {
+          return updatedTask;
+        }
+        return t;
+      })
+    );
+
+    const existingTasks = localStorage.getItem('tasks');
+    const parsedExistingTasks = existingTasks ? JSON.parse(existingTasks) : [];
+    localStorage.setItem(
+      'tasks',
+      JSON.stringify(
+        parsedExistingTasks.map((t: Task) => {
+          if (t.id === task.id) {
+            return updatedTask;
+          }
+          return t;
+        })
+      )
+    );
+  };
+
   return (
     <div className="border border-gray-200 p-4 rounded-md">
       <div className="flex items-baseline gap-3">
         <div className="flex items-center gap-3 relative top-1">
-          <Checkbox checked={is_completed} className="w-5 h-5" />
+          <Checkbox checked={is_completed} onCheckedChange={updateTaskStatus} className="w-5 h-5" />
           <Star
             onClick={starredOrUnStarredTask}
             className={`h-5 w-5 ${
