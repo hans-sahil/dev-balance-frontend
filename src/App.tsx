@@ -4,6 +4,8 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './pages/';
 import TaskManager from './pages/TaskManager';
+import NotesManager from './pages/NotesManager';
+import MyAssistant from './pages/MyAssistant';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +24,14 @@ const router = createBrowserRouter([
   {
     path: '/todo',
     Component: TaskManager,
+  },
+  {
+    path: '/notes',
+    Component: NotesManager,
+  },
+  {
+    path: '/my-assistant',
+    Component: MyAssistant,
   },
 ]);
 function App() {

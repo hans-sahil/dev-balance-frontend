@@ -1,6 +1,6 @@
 import CommonPage from '@/components/layouts/CommonPage';
 
-const Dashboard = () => {
+const MyAssistant = () => {
   return (
     <CommonPage>
       <div className="flex w-full h-full items-center justify-center text-blue-600">
@@ -10,4 +10,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default MyAssistant;

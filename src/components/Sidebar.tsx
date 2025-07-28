@@ -1,4 +1,4 @@
-import { List, LayoutDashboard, type LucideIcon } from 'lucide-react';
+import { List, LayoutDashboard, type LucideIcon, FileText, Bot } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { NavLink } from 'react-router';
 
@@ -12,6 +12,8 @@ interface menuItem {
 const menuItems: menuItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '' },
   { id: 'todos', label: 'Todos', icon: List, path: 'todo' },
+  { id: 'notes', label: 'Notes', icon: FileText, path: 'notes' },
+  { id: 'ai-assistant', label: 'AI Assistant', icon: Bot, path: 'my-assistant' },
 ];
 
 const Sidebar = () => {
