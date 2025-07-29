@@ -1,4 +1,4 @@
-import { Calendar, Star, Timer, EllipsisVertical, PencilIcon, Trash2 } from 'lucide-react';
+import { Calendar, Star, Timer, EllipsisVertical, PencilIcon, Trash2, Play } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { Progress } from '../ui/progress';
 import { Badge } from '../ui/badge';
@@ -16,6 +16,7 @@ import { useState, type Dispatch, type SetStateAction } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import convertMinutesToHoursAndMinutes from '@/utils/convertMinToHoursAndMin';
 import AddOrEditTaskDialog from './AddOrEditTaskDialog';
+import { Button } from '../ui/button';
 
 interface TaskRendererProps {
   task: Task;
@@ -144,7 +145,7 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
   };
 
   return (
-    <div className="border border-gray-200 p-4 rounded-md">
+    <div className="border border-gray-200 p-4 rounded-md relative">
       <div className="flex items-baseline gap-3">
         <div className="flex items-center gap-3 relative top-1">
           <Checkbox checked={is_completed} onCheckedChange={updateTaskStatus} className="w-5 h-5" />
@@ -237,6 +238,18 @@ const TaskRenderer = ({ task, setTasks }: TaskRendererProps) => {
             )}
           </div>
         </div>
+
+        {!task.is_completed && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {}}
+            className="text-green-600 border-green-600 hover:bg-green-50 absolute top-4 right-14"
+          >
+            <Play className="h-3 w-3 mr-1" />
+            Start
+          </Button>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
