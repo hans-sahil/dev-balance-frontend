@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from '@/lib/axios';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
@@ -10,12 +10,15 @@ const VerifyEmail = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const [status, setStatus] = useState<'verifying' | 'success' | 'error'>('verifying');
+  const hasRun = useRef(false);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
     const verifyEmail = async () => {
       try {
         const res = await axios.get(`/auth/verify-email?token=${token}`);
-        if (res.status === 200) {
+        if (res.status === 201) {
           setStatus('success');
         } else {
           setStatus('error');
@@ -23,6 +26,8 @@ const VerifyEmail = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setStatus('error');
+      } finally {
+        hasRun.current = true;
       }
     };
 
